@@ -4,12 +4,10 @@ export default function RootLayout({
     children: React.ReactNode
   }) {
     return (
-      <html lang="en">
-        <body>
-            <div className="w-full flex justify-center items-center min-h-screen">
-            {children}
-            </div>
-        </body>
-      </html>
+      <section className="bg-dark-1">
+        <div className="w-full flex justify-center items-center min-h-screen">
+          {children}
+        </div>
+      </section>
     )
   }

@@ -1,6 +1,5 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "../ui/button"
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import NavItems from "./NavItems"
 import MobileNav from "./MobileNav"
@@ -28,11 +27,11 @@ const Header = () => {
                      <MobileNav />
                    </SignedIn>
                    <SignedOut>
-                     <Button asChild className="rounded-full" size="lg">
+                     <button className="rounded-full">
                         <Link href="/sign-in">
                             Login
                         </Link>
-                     </Button>
+                     </button>
                    </SignedOut>
                 </div>
             </div>
