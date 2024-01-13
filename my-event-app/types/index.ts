@@ -34,3 +34,8 @@ export type AccountProfileType = {
         avatar: string;
     }
 }
+
+export interface CategoryInterface extends Document{
+    _id: ObjectId;
+    name: string;
+}
