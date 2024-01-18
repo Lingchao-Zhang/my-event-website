@@ -14,7 +14,7 @@ export interface EventInterface extends Document {
     price?: string,
     isFree: boolean,
     eventUrl?: string,
-    category: { _id: ObjectId, name: string},
+    category: string,
     createdBy: { _id: ObjectId, username: string}
 }
 export interface CategoryInterface extends Document{
@@ -32,18 +32,11 @@ export type userCreationParamType = {
 }
 
 export type AccountProfileType = {
-    user: {
-        clerkId: string;
-        username: string;
-        firstname: string;
-        lastname: string;
-        avatar: string;
-    }
+    user: userCreationParamType
 }
 
-
 export type EventFormType = {
-    currentUserId: string; 
+    currentUserObjectId: ObjectId; 
     type: "create" | "update";
     originalEvent?: EventInterface
 }
@@ -57,4 +50,19 @@ export type FileUploaderType = {
     imageUrl: string;
     onChangeHandler: (url: string) => void;
     setFiles: Dispatch<SetStateAction<File[]>>
+}
+
+export type eventCreationParamType = {
+    title: string;
+    category: string;
+    description: string;
+    imageUrl: string;
+    location: string;
+    startTime: Date;
+    endTime: Date;
+    price: string;
+    isFree: boolean;
+    eventUrl: string;
+    createdBy: ObjectId; 
+    createdAt: Date;
 }

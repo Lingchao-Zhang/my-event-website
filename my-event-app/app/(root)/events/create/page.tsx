@@ -14,7 +14,7 @@ const EventCreation = async () => {
       } else{
         return(
           <EventForm 
-            currentUserId={userInfo.clerkId} 
+            currentUserObjectId={userInfo._id} 
             type="create" 
           />
         )

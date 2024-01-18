@@ -12,8 +12,7 @@ const eventSchema = new Schema({
     isFree: { type: Boolean, default: false },
     eventUrl: { type: String },
     category: {
-        type: Schema.Types.ObjectId,
-        ref: "Category"
+        type: String
     },
     createdBy: {
         type: Schema.Types.ObjectId,

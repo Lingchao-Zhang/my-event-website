@@ -16,11 +16,16 @@ import { useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Checkbox } from "../ui/checkbox"
+import { isBase64Image } from "@/lib/utils"
+import { useUploadThing } from "@/lib/uploadthing"
+import { createEvent } from "@/lib/database/actions/event.action"
+import { useRouter } from "next/navigation"
 
-const EventForm = ({ currentUserId, type, originalEvent }: EventFormType) => {
+const EventForm = ({ currentUserObjectId, type, originalEvent }: EventFormType) => {
     const [files, setFiles] = useState<File[]>([])
     const eventInitialValue = type === "create" ? eventDefaultValues : originalEvent
-    
+    const { startUpload } = useUploadThing("media")
+    const router = useRouter()
     const form = useForm<z.infer<typeof eventValidation>>(
         {
             resolver: zodResolver(eventValidation),
@@ -28,7 +33,46 @@ const EventForm = ({ currentUserId, type, originalEvent }: EventFormType) => {
         }
     )
 
-    const onSubmit = async (values: z.infer<typeof eventValidation>) => {}
+    const onSubmit = async (values: z.infer<typeof eventValidation>) => {
+        if(type === "create"){
+            const imgRes = await startUpload(files)
+
+            if(imgRes && imgRes[0].url){
+                values.imageUrl = imgRes[0].url
+            }
+
+            const eventFormData = {
+                title: values.title,
+                category: values.category,
+                description: values.description,
+                imageUrl: values.imageUrl,
+                location: values.location,
+                startTime: values.startTime,
+                endTime: values.endTime,
+                price: values.price,
+                isFree: values.isFree,
+                eventUrl: values.eventUrl,
+                createdBy: currentUserObjectId,
+                createdAt: new Date(),
+            }
+
+            await createEvent(eventFormData)
+            alert("create event successfully!")
+            router.push("/")
+        } else if(type === "update"){
+            const blob = values.imageUrl
+            const isImageChanged = isBase64Image(blob)
+
+            if(isImageChanged){
+                const imgRes = await startUpload(files)
+
+                if(imgRes && imgRes[0].url){
+                    values.imageUrl = imgRes[0].url
+                }
+            }
+        }
+        
+    }
 
     return(
         <Form {...form}>
@@ -52,7 +96,7 @@ const EventForm = ({ currentUserId, type, originalEvent }: EventFormType) => {
                     />
                     <FormField
                         control={form.control}
-                        name="categoryId"
+                        name="category"
                         render={({ field }) => (
                         <FormItem className="w-full md:w-2/5">
                             <FormControl>
@@ -190,7 +234,7 @@ const EventForm = ({ currentUserId, type, originalEvent }: EventFormType) => {
                                      width={24}
                                      height={24}
                                      />
-                                    <Input type="number" placeholder="price" className="input-field" {...field} />
+                                    <Input placeholder="price" className="input-field" {...field} />
                                     <FormField
                                         control={form.control}
                                         name="isFree"

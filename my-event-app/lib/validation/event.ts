@@ -12,5 +12,5 @@ export const eventValidation = z.object({
     price: z.string(),
     isFree: z.boolean(),
     eventUrl: z.string().url(),
-    categoryId: z.string(),
+    category: z.string(),
 })
