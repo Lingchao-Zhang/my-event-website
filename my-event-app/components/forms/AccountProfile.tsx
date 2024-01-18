@@ -12,6 +12,7 @@ import { Input } from "../ui/input"
 import { isBase64Image } from "@/lib/utils"
 import { createUser } from "@/lib/database/actions/user.action"
 import { useRouter } from "next/navigation"
+import { Button } from "../ui/button"
 
 const AccountProfile = ({ user }: AccountProfileType) => {
     const router = useRouter()
@@ -163,7 +164,7 @@ const AccountProfile = ({ user }: AccountProfileType) => {
                     </FormItem>
                     )}
                 />
-                <button type="submit" className="bg-purple-400 text-light-2">Submit</button>
+                <Button type="submit" className="button">Submit</Button>
             </form>
         </Form>
     )
