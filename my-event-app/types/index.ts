@@ -14,7 +14,7 @@ export interface EventInterface extends Document {
     price?: string,
     isFree: boolean,
     eventUrl?: string,
-    catergory: { _id: ObjectId, name: string},
+    category: { _id: ObjectId, name: string},
     createdBy: { _id: ObjectId, username: string}
 }
 export interface CategoryInterface extends Document{

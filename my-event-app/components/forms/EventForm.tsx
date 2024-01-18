@@ -242,7 +242,14 @@ const EventForm = ({ currentUserId, type, originalEvent }: EventFormType) => {
                         )}
                     />
                 </div>
-                <Button type="submit" className="button md:w-1/4 md:mx-auto">Submit</Button>
+                <Button type="submit" className="button md:w-1/4 md:mx-auto" disabled={form.formState.isSubmitting}>
+                    {
+                        form.formState.isSubmitting ? 
+                        "Submitting"
+                        :
+                        `${type} Event`
+                    }
+                </Button>
             </form>
         </Form>
     )

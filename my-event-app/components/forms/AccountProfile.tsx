@@ -1,18 +1,18 @@
 "use client"
 import { useUploadThing } from "@/lib/uploadthing"
 import { userValidation } from "@/lib/validation/user"
-import { ChangeEvent, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { AccountProfileType } from "@/types"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "../ui/form"
-import Image from "next/image"
 import { Input } from "../ui/input"
 import { isBase64Image } from "@/lib/utils"
 import { createUser } from "@/lib/database/actions/user.action"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
+import FileUploader from "../shared/FileUploader"
 
 const AccountProfile = ({ user }: AccountProfileType) => {
     const router = useRouter()
@@ -29,27 +29,7 @@ const AccountProfile = ({ user }: AccountProfileType) => {
             }
         }
     )
-
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>, fieldOnChange: (value: string) => void) => {
-        e.preventDefault() 
-        
-        const fileReader = new FileReader()
-        if(e.target.files && e.target.files.length > 0){
-            const file = e.target.files[0]
-            setFiles(Array.from(e.target.files))
-
-            if(!file.type.includes("image")){
-                return
-            } else {
-                fileReader.onload = async (event) => {
-                    const imageDataUrl = event.target?.result?.toString() || ""
-                    fieldOnChange(imageDataUrl)
-                }
-             fileReader.readAsDataURL(file)
-            }
-        }
-    }
-
+    
     const onSubmit = async (values: z.infer<typeof userValidation>) => {
         const blob = values.avatar
         const isImageChanged = isBase64Image(blob)
@@ -82,34 +62,11 @@ const AccountProfile = ({ user }: AccountProfileType) => {
                     name="avatar"
                     render={({ field }) => (
                     <FormItem className="flex items-center gap-4">
-                        <FormLabel className="account-form_image-label">
-                            {
-                                field.value ? 
-                                <Image 
-                                src={field.value}
-                                alt="profile image"
-                                width={96}
-                                height={96}
-                                priority
-                                className="rounded-full object-contain"
-                                />
-                                :
-                                <Image 
-                                src="/assets/images/test.png"
-                                alt="profile image"
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                                />
-                            }
-                        </FormLabel>
                         <FormControl className="flex-1 text-base-semibold text-gray-200">
-                            <Input  
-                                type="file"
-                                accept="image/*"
-                                placeholder="Upload a photo"
-                                className="account-form_image-input"
-                                onChange={(e) => handleImageChange(e, field.onChange)} 
+                            <FileUploader 
+                                imageUrl={field.value}
+                                onChangeHandler={field.onChange}
+                                setFiles={setFiles}
                             />
                         </FormControl>
                         <FormMessage />

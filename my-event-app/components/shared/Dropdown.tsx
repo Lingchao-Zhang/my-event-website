@@ -20,15 +20,26 @@ import {
 } from "../ui/alert-dialog"
   
 import { CategoryInterface, DropdownType } from "@/types"
-import { startTransition, useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "../ui/input"
+import { createCategory, fetchAllCategories } from "@/lib/database/actions/category.action"
   
 const Dropdown = ({ value, onChangeHandler }: DropdownType) => {
     const [categories, setCategories] = useState<CategoryInterface[]>([])
     const [newCategory, setNewCategory] = useState("")
-    const handleAddNewCategory = () => {
-        // add new category to db
+    const getAllCategories = async () => {
+        const allCategories = await fetchAllCategories()
+        setCategories(allCategories)
     }
+
+    const handleAddNewCategory = async () => {
+        await createCategory(newCategory.trim())
+        getAllCategories()
+    }
+
+    useEffect(() => {
+        getAllCategories()
+    },[])
 
     return(
         <Select onValueChange={onChangeHandler} defaultValue={value}>
@@ -59,7 +70,7 @@ const Dropdown = ({ value, onChangeHandler }: DropdownType) => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => startTransition(handleAddNewCategory)}>Add</AlertDialogAction>
+                        <AlertDialogAction onClick={() => handleAddNewCategory()}>Add</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
