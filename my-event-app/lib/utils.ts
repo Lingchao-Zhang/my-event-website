@@ -10,4 +10,6 @@ const isBase64Image = (imageData: string) => {
   return base64Regex.test(imageData);
 }
 
-export { cn, isBase64Image }
+const convertFileToUrl = (file: File) => URL.createObjectURL(file)
+
+export { cn, isBase64Image, convertFileToUrl }

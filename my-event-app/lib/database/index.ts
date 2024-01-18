@@ -6,8 +6,8 @@ let cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
   if (cached.conn) return cached.conn;
-
-  if(!MONGODB_URL) throw new Error('MONGODB_URI is missing');
+  
+  if(!MONGODB_URL) throw new Error('MONGODB_URL is missing');
 
   cached.promise = cached.promise || mongoose.connect(MONGODB_URL, {
     dbName: 'Evently',
@@ -15,6 +15,5 @@ export const connectToDatabase = async () => {
   })
 
   cached.conn = await cached.promise;
-
   return cached.conn;
 }

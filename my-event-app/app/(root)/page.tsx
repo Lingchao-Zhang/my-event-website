@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { fetchUserById } from '@/lib/database/actions/user.action'
 import { currentUser } from '@clerk/nextjs'
 import Image from 'next/image'
@@ -22,11 +23,11 @@ export default async function Home() {
                   Host, Connect, Celebrate: Your Events, Our Platform!
                 </h1>
                 <p className='p-regular-20 md:p-regular-24'>Book and learn helpful tips from 3,168+ mentors in world-class companies with our global community.</p>
-                <button className="button w-fit md:w-full">
+                <Button className="button w-fit md:w-full">
                   <Link href="#events">
                     Explore Now
                   </Link>
-                </button>
+                </Button>
               </div>
     
               <Image 

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import NavItems from "./NavItems"
 import MobileNav from "./MobileNav"
+import { Button } from "@/components/ui/button"
 
 const Header = () => {
     return(
@@ -27,11 +28,11 @@ const Header = () => {
                      <MobileNav />
                    </SignedIn>
                    <SignedOut>
-                     <button className="rounded-full">
+                     <Button className="button">
                         <Link href="/sign-in">
                             Login
                         </Link>
-                     </button>
+                     </Button>
                    </SignedOut>
                 </div>
             </div>
