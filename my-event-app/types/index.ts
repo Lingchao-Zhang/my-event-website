@@ -88,3 +88,24 @@ export type EventDetailType = {
 export type paramsType = {
     id: ObjectId
 }
+
+export type fetchEventsParamType = {
+    currentPageNumber: number; 
+    pageSize: number; 
+    categoryType?: string;
+    searchParam: string;
+}
+
+export type EventCardType = {
+    objectId: string;
+    imageUrl: string;
+    isFree: boolean;
+    price: string;
+    category: string;
+    startTime: Date;
+    title: string;
+    organizer: {
+        clerkId: string;
+        username: string;
+    }
+}

@@ -35,8 +35,8 @@ const EventDetail = ({
             <div className="flex flex-col gap-5">
                 <h1 className="h1-bold">{title}</h1>
                 <div className="flex gap-5">
-                    <div className="rounded-full w-fit h-8 p-medium-16 bg-green-300 text-center px-4 py-1">{isFree ? "Free" : formatPrice(price)}</div>
-                    <div className="rounded-full w-fit h-8 p-medium-16 bg-gray-200 text-center px-4 py-1">{category}</div>
+                    <div className="rounded-full w-fit h-wit p-medium-16 bg-green-300 text-center px-4 py-1">{isFree ? "Free" : formatPrice(price)}</div>
+                    <div className="rounded-full w-fit h-wit p-medium-16 bg-gray-200 text-center px-4 py-1">{category}</div>
                 </div>
                 <div className="flex gap-2 items-center">
                     <p className="p-bold-24">by</p>
