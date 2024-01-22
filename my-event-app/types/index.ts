@@ -109,3 +109,9 @@ export type EventCardType = {
         username: string;
     }
 }
+
+export type fetchRelatedEventsParamType = {
+    originalEventObjectId: ObjectId;
+    categoryType: string;
+    organizerId: string;
+}

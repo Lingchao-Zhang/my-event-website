@@ -1,6 +1,6 @@
 "use server"
 
-import { eventCreationParamType, fetchEventsParamType } from "@/types"
+import { eventCreationParamType, fetchEventsParamType, fetchRelatedEventsParamType } from "@/types"
 import { connectToDatabase } from ".."
 import Event from "../models/event.model"
 import User from "../models/user.model"
@@ -167,4 +167,24 @@ const fetchAllEvents = async ({currentPageNumber, pageSize, categoryType, search
     }
 }
 
-export {createEvent, fetchEventDetailById, fetchAllEvents}
+const fetchRelatedEvents = async ({originalEventObjectId, categoryType, organizerId}: fetchRelatedEventsParamType) => {
+    try{
+        await connectToDatabase()
+        // related events have either the same category or the same organizer with the original event 
+        const organizer = await User.findOne({clerkId: organizerId})
+        const relatedEvent = await Event.find({_id: {$ne: originalEventObjectId}, $or: [{category: categoryType}, {createdBy: organizer._id}]})
+                                        .populate(
+                                            {
+                                                path: "createdBy",
+                                                model: User,
+                                                select: "clerkId username"
+                                            }
+                                        )
+
+        return relatedEvent
+    } catch(error: any){
+        throw new Error(`Failed to fetch the related events: ${error.message}`)
+    }
+}
+
+export {createEvent, fetchEventDetailById, fetchAllEvents, fetchRelatedEvents}
