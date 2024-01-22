@@ -1,4 +1,6 @@
+import EventCard from '@/components/shared/EventCard'
 import { Button } from '@/components/ui/button'
+import { fetchAllEvents } from '@/lib/database/actions/event.action'
 import { fetchUserById } from '@/lib/database/actions/user.action'
 import { currentUser } from '@clerk/nextjs'
 import Image from 'next/image'
@@ -14,6 +16,13 @@ export default async function Home() {
     if(!userInfo?.onboarded){
       redirect("/onboarding")
     } else{
+      const fetchEventsParam = {
+        currentPageNumber: 1, 
+        pageSize: 10, 
+        searchParam: ""
+      }
+      const eventsData = await fetchAllEvents(fetchEventsParam)
+      const events = eventsData.displayedEvents
       return (
         <>
           <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -45,6 +54,26 @@ export default async function Home() {
             <div className="flex w-full flex-col gap-5 md:flex-row">
               {
                 //TODO: Search and CatergoryFilter Components
+              }
+            </div>
+            <div className="flex w-full flex-col gap-6 md:flex-row md:flex-wrap">
+              {
+                events.length > 0 ? 
+                events.map((event) => (
+                  <EventCard 
+                    key={event._id}
+                    objectId={event._id} 
+                    imageUrl={event.imageUrl} 
+                    isFree={event.isFree} 
+                    price={event.price} 
+                    category={event.category} 
+                    startTime={event.startTime} 
+                    title={event.title} 
+                    organizer={event.createdBy}                  
+                   />
+                ))
+                :
+                <p className="no-result">No threads founded</p>
               }
             </div>
           </section>

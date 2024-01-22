@@ -17,7 +17,7 @@ import FileUploader from "../shared/FileUploader"
 const AccountProfile = ({ user }: AccountProfileType) => {
     const router = useRouter()
     const [files, setFiles] = useState<File[]>([])
-    const { startUpload } = useUploadThing("media")
+    const { startUpload } = useUploadThing('imageUploader')
     const form = useForm<z.infer<typeof userValidation>>(
         {
             resolver: zodResolver(userValidation),
@@ -33,12 +33,17 @@ const AccountProfile = ({ user }: AccountProfileType) => {
     const onSubmit = async (values: z.infer<typeof userValidation>) => {
         const blob = values.avatar
         const isImageChanged = isBase64Image(blob)
-
+        let uploadedImageUrl = values.avatar
+        
         if(isImageChanged){
-            const imgRes = await startUpload(files)
+            if(files.length > 0) {
+                const uploadedImages = await startUpload(files)
 
-            if(imgRes && imgRes[0].url){
-                values.avatar = imgRes[0].url
+                if(!uploadedImages) {
+                    return
+                }
+
+                uploadedImageUrl = uploadedImages[0].url
             }
         }
 
@@ -47,7 +52,7 @@ const AccountProfile = ({ user }: AccountProfileType) => {
             username: values.username,
             firstname: values.firstname,
             lastname: values.lastname,
-            avatar: values.avatar
+            avatar: uploadedImageUrl
         }
 
         await createUser(onBoardingUser)

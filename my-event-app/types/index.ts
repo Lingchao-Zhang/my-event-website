@@ -1,5 +1,4 @@
-import { ObjectId } from "mongodb";
-import { Document } from "mongoose"
+import { Document, ObjectId } from "mongoose"
 import { Dispatch, SetStateAction } from "react";
 
 export interface EventInterface extends Document {
@@ -65,4 +64,54 @@ export type eventCreationParamType = {
     eventUrl: string;
     createdBy: ObjectId; 
     createdAt: Date;
+}
+
+export type EventDetailType = {
+    currentUserId: string;
+    title: string;
+    category: string;
+    description: string;
+    imageUrl: string;
+    location: string;
+    startTime: Date;
+    endTime: Date;
+    price: string;
+    isFree: boolean;
+    eventUrl: string;
+    organizer: {
+        clerkId: string;
+        username: string;
+    }
+    createdAt: Date;
+}
+
+export type paramsType = {
+    id: ObjectId
+}
+
+export type fetchEventsParamType = {
+    currentPageNumber: number; 
+    pageSize: number; 
+    categoryType?: string;
+    searchParam: string;
+}
+
+export type EventCardType = {
+    objectId: string;
+    imageUrl: string;
+    isFree: boolean;
+    price: string;
+    category: string;
+    startTime: Date;
+    title: string;
+    organizer: {
+        clerkId: string;
+        username: string;
+    }
+}
+
+export type fetchRelatedEventsParamType = {
+    originalEventObjectId: ObjectId;
+    categoryType: string;
+    organizerId: string;
 }
