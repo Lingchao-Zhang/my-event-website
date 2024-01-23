@@ -1,13 +1,17 @@
+import CategoryFilter from '@/components/shared/CategoryFilter'
 import EventCard from '@/components/shared/EventCard'
+import SearchBar from '@/components/shared/SearchBar'
 import { Button } from '@/components/ui/button'
+import { fetchAllCategories } from '@/lib/database/actions/category.action'
 import { fetchAllEvents } from '@/lib/database/actions/event.action'
 import { fetchUserById } from '@/lib/database/actions/user.action'
+import { searchParamsType } from '@/types'
 import { currentUser } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-export default async function Home() {
+export default async function Home({searchParams}: {searchParams: searchParamsType}) {
   const user = await currentUser()
   if(!user){
     return null
@@ -16,11 +20,19 @@ export default async function Home() {
     if(!userInfo?.onboarded){
       redirect("/onboarding")
     } else{
-      const fetchEventsParam = {
+      const fetchEventsParam = searchParams.category ? 
+      {
         currentPageNumber: 1, 
         pageSize: 10, 
-        searchParam: ""
+        categoryType: searchParams.category,
+        searchParam: searchParams.filter ? searchParams.filter : ""
+      } : 
+      {
+        currentPageNumber: 1, 
+        pageSize: 10, 
+        searchParam: searchParams.filter ? searchParams.filter : ""
       }
+      const allCategories = await fetchAllCategories()
       const eventsData = await fetchAllEvents(fetchEventsParam)
       const events = eventsData.displayedEvents
       return (
@@ -52,9 +64,10 @@ export default async function Home() {
           <section id="events" className="wrapper my-8 flex flex-col gap-8 md:gap-12">
             <h2 className="h2-bold">Trust by <br/> Thousands of Events</h2>
             <div className="flex w-full flex-col gap-5 md:flex-row">
-              {
-                //TODO: Search and CatergoryFilter Components
-              }
+              <SearchBar />
+              <CategoryFilter 
+                categories={allCategories}
+               />
             </div>
             <div className="flex w-full flex-col gap-6 md:flex-row md:flex-wrap">
               {

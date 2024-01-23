@@ -89,6 +89,11 @@ export type paramsType = {
     id: ObjectId
 }
 
+export type searchParamsType = {
+    filter: string;
+    category: string;
+}
+
 export type fetchEventsParamType = {
     currentPageNumber: number; 
     pageSize: number; 
@@ -114,4 +119,8 @@ export type fetchRelatedEventsParamType = {
     originalEventObjectId: ObjectId;
     categoryType: string;
     organizerId: string;
+}
+
+export type CategoryFilterType = {
+    categories: CategoryInterface[]
 }
