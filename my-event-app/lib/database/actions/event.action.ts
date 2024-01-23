@@ -6,10 +6,11 @@ import Event from "../models/event.model"
 import User from "../models/user.model"
 import { ObjectId } from "mongoose"
 
-const getObjectIdByUsername = async (username: string) => {
+const getObjectIdByUsername = async (searchedUsername: string) => {
     try{
         await connectToDatabase()
-        const user = await User.findOne({username: username})
+        const regex = new RegExp(searchedUsername, "i")
+        const user = await User.findOne({username: {$regex: regex}})
         if(!user){
             return null
         }
