@@ -8,7 +8,6 @@ import * as z from "zod"
 import { AccountProfileType } from "@/types"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "../ui/form"
 import { Input } from "../ui/input"
-import { isBase64Image } from "@/lib/utils"
 import { createUser } from "@/lib/database/actions/user.action"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
@@ -31,20 +30,16 @@ const AccountProfile = ({ user }: AccountProfileType) => {
     )
     
     const onSubmit = async (values: z.infer<typeof userValidation>) => {
-        const blob = values.avatar
-        const isImageChanged = isBase64Image(blob)
         let uploadedImageUrl = values.avatar
         
-        if(isImageChanged){
-            if(files.length > 0) {
-                const uploadedImages = await startUpload(files)
+        if(files.length > 0) {
+            const uploadedImages = await startUpload(files)
 
-                if(!uploadedImages) {
-                    return
-                }
-
-                uploadedImageUrl = uploadedImages[0].url
+            if(!uploadedImages) {
+                return
             }
+
+            uploadedImageUrl = uploadedImages[0].url
         }
 
         const onBoardingUser = {

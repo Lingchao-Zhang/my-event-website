@@ -2,8 +2,10 @@ import { formatDateTime, formatPrice } from "@/lib/utils"
 import { EventCardType } from "@/types"
 import Image from "next/image"
 import Link from "next/link"
+import DeleteConfirmation from "./DeleteConfirmation"
 
 const EventCard = ({
+    currentUserId,
     objectId,
     imageUrl,
     isFree,
@@ -28,7 +30,27 @@ const EventCard = ({
                 <div className="rounded-full w-fit h-fit p-medium-16 bg-green-300 text-center px-4 py-1">{isFree ? "Free" : formatPrice(price)}</div>
                 <div className="rounded-full w-fit h-fit p-medium-16 bg-gray-200 text-center px-4 py-1">{category}</div>
             </div>
-            <p className="p-regular-20 px-5">{formatDateTime(startTime).dateTime}</p>
+            <div className="flex gap-10">
+                <p className="p-regular-20 px-5">{formatDateTime(startTime).dateTime}</p>
+                {
+                    currentUserId === organizer.clerkId ? 
+                    <div className="flex gap-10 items-center">
+                        <Link href={`/events/${objectId}/update`}>
+                            <Image
+                                src="/assets/icons/edit.svg"
+                                alt="edit icon"
+                                width={24}
+                                height={24}
+                            />
+                        </Link>
+                        <DeleteConfirmation
+                            objectId={objectId} 
+                         />
+                    </div>
+                    :
+                    null
+                }
+            </div>
             <Link href={`/events/${objectId}`} className="p-bold-24 px-5 py-3">{title}</Link>
             <Link className="p-regular-24 p-5" href={`/profile/${organizer.clerkId}`}>{organizer.username}</Link>
         </div>

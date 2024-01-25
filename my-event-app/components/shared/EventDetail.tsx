@@ -5,7 +5,6 @@ import { Button } from "../ui/button"
 import { formatDateTime, formatPrice } from "@/lib/utils"
 
 const EventDetail = ({
-    currentUserId,
     title,
     category,
     description,

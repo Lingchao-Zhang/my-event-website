@@ -4,17 +4,17 @@ import { Dispatch, SetStateAction } from "react";
 export interface EventInterface extends Document {
     _id: ObjectId,
     title: string,
-    description?: string,
-    location?: string,
+    description: string,
+    location: string,
     createdAt: Date,
     imageUrl: string,
     startTime: Date,
     endTime: Date,
-    price?: string,
+    price: string,
     isFree: boolean,
-    eventUrl?: string,
+    eventUrl: string,
     category: string,
-    createdBy: { _id: ObjectId, username: string}
+    createdBy: { clerkId: string, username: string}
 }
 export interface CategoryInterface extends Document{
     _id: ObjectId;
@@ -67,7 +67,6 @@ export type eventCreationParamType = {
 }
 
 export type EventDetailType = {
-    currentUserId: string;
     title: string;
     category: string;
     description: string;
@@ -102,7 +101,8 @@ export type fetchEventsParamType = {
 }
 
 export type EventCardType = {
-    objectId: string;
+    currentUserId: string;
+    objectId: ObjectId;
     imageUrl: string;
     isFree: boolean;
     price: string;
@@ -123,4 +123,24 @@ export type fetchRelatedEventsParamType = {
 
 export type CategoryFilterType = {
     categories: CategoryInterface[]
+}
+
+export type updateEventParamType = {
+    eventObjectId: ObjectId,
+    eventUpdateInfo: {
+        title: string;
+        category: string;
+        description: string;
+        imageUrl: string;
+        location: string;
+        startTime: Date;
+        endTime: Date;
+        price: string;
+        isFree: boolean;
+        eventUrl: string;
+    }
+}
+
+export type DeleteConfirmationType = {
+    objectId: ObjectId
 }

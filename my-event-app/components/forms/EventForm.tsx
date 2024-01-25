@@ -16,14 +16,26 @@ import { useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Checkbox } from "../ui/checkbox"
-import { isBase64Image } from "@/lib/utils"
+import { formatDateTime } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
-import { createEvent } from "@/lib/database/actions/event.action"
+import { createEvent, updateEvent } from "@/lib/database/actions/event.action"
 import { useRouter } from "next/navigation"
 
 const EventForm = ({ currentUserObjectId, type, originalEvent }: EventFormType) => {
     const [files, setFiles] = useState<File[]>([])
-    const eventInitialValue = type === "create" ? eventDefaultValues : originalEvent
+    const originalEventInfo = {
+        title: originalEvent?.title,
+        description: originalEvent?.description,
+        location: originalEvent?.location,
+        imageUrl: originalEvent?.imageUrl,
+        startTime: new Date(originalEvent?.startTime || ""),
+        endTime: new Date(originalEvent?.endTime || ""),
+        category: originalEvent?.category,
+        price: originalEvent?.price,
+        isFree: originalEvent?.isFree,
+        eventUrl: originalEvent?.eventUrl,
+    }
+    const eventInitialValue = type === "create" ? eventDefaultValues : originalEventInfo
     const { startUpload } = useUploadThing('imageUploader')
     const router = useRouter()
     const form = useForm<z.infer<typeof eventValidation>>(
@@ -68,10 +80,7 @@ const EventForm = ({ currentUserObjectId, type, originalEvent }: EventFormType) 
             form.reset()
             router.push(`/events/${newEvent._id}`)
         } else if(type === "update"){
-            const blob = values.imageUrl
-            const isImageChanged = isBase64Image(blob)
-
-            if(isImageChanged){
+            if(values.imageUrl !== eventInitialValue.imageUrl){
                 if(files.length > 0) {
                     const uploadedImages = await startUpload(files)
 
@@ -81,6 +90,29 @@ const EventForm = ({ currentUserObjectId, type, originalEvent }: EventFormType) 
 
                     uploadedImageUrl = uploadedImages[0].url
                 }
+            }
+            if(originalEvent){
+                const updatedEventData = {
+                    eventObjectId: originalEvent._id,
+                    eventUpdateInfo:
+                    {
+                        ...eventInitialValue,
+                        title: values.title,
+                        category: values.category,
+                        description: values.description,
+                        imageUrl: uploadedImageUrl,
+                        location: values.location,
+                        startTime: values.startTime,
+                        endTime: values.endTime,
+                        price: values.price,
+                        isFree: values.isFree,
+                        eventUrl: values.eventUrl
+                    }
+                }
+                const newEvent = await updateEvent(updatedEventData)
+                alert("update event successfully!")
+                form.reset()
+                router.push(`/events/${newEvent._id}`)
             }
         }
         
