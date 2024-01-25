@@ -74,6 +74,7 @@ export default async function Home({searchParams}: {searchParams: searchParamsTy
                 events.length > 0 ? 
                 events.map((event) => (
                   <EventCard 
+                    currentUserId={userInfo.clerkId}
                     key={event._id}
                     objectId={event._id} 
                     imageUrl={event.imageUrl} 

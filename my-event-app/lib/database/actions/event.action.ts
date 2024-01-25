@@ -1,6 +1,6 @@
 "use server"
 
-import { eventCreationParamType, fetchEventsParamType, fetchRelatedEventsParamType } from "@/types"
+import { eventCreationParamType, fetchEventsParamType, fetchRelatedEventsParamType, updateEventParamType } from "@/types"
 import { connectToDatabase } from ".."
 import Event from "../models/event.model"
 import User from "../models/user.model"
@@ -188,4 +188,37 @@ const fetchRelatedEvents = async ({originalEventObjectId, categoryType, organize
     }
 }
 
-export {createEvent, fetchEventDetailById, fetchAllEvents, fetchRelatedEvents}
+const updateEvent = async ({eventObjectId, eventUpdateInfo}: updateEventParamType) => {
+    try{
+        await connectToDatabase()
+        const event = Event.findOneAndUpdate(
+            {_id: eventObjectId},
+            eventUpdateInfo
+        )
+
+        return event
+    } catch(error: any){
+        throw new Error(`Failed to update the event: ${error.message}`)
+    }
+}
+
+const deleteEvent = async (eventObjectId: ObjectId) => {
+    try{
+        await connectToDatabase()
+        // 1. find the event
+        const event = await Event.findOne({_id: eventObjectId})
+
+        // 2. find the organizer of the event and remove the event from his organized events
+        await User.findOneAndUpdate(
+            {_id: event.createdBy},
+            {$pull: {organisedEvents: eventObjectId}}
+        )
+
+        // 3. delete the event
+        await Event.findOneAndDelete({_id: eventObjectId})
+    } catch(error: any){
+        throw new Error(`Failed to delete the event: ${error.message}`)
+    }
+}
+
+export {createEvent, fetchEventDetailById, fetchAllEvents, fetchRelatedEvents, updateEvent, deleteEvent}

@@ -27,7 +27,6 @@ const EventDetailPage = async ({params}: {params: paramsType}) => {
         return(
           <div>
             <EventDetail 
-              currentUserId={userInfo.clerkId} 
               title={eventData.title} 
               category={eventData.category} 
               description={eventData.description} 
@@ -49,6 +48,7 @@ const EventDetailPage = async ({params}: {params: paramsType}) => {
                 relatedEvents.length > 0 ?
                 relatedEvents.map((event) => (
                   <EventCard 
+                    currentUserId={userInfo.clerkId}
                     key={event._id}
                     objectId={event._id} 
                     imageUrl={event.imageUrl} 

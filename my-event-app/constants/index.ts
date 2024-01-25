@@ -18,10 +18,10 @@ export const headerLinks = [
     description: '',
     location: '',
     imageUrl: '',
-    startDateTime: new Date(),
-    endDateTime: new Date(),
+    startTime: new Date(),
+    endTime: new Date(),
     category: '',
     price: '',
     isFree: false,
-    url: '',
+    eventUrl: '',
   }
