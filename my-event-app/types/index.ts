@@ -88,6 +88,10 @@ export type paramsType = {
     id: ObjectId
 }
 
+export type profileParamsType = {
+    id: string
+}
+
 export type searchParamsType = {
     filter: string;
     category: string;
@@ -143,4 +147,12 @@ export type updateEventParamType = {
 
 export type DeleteConfirmationType = {
     objectId: ObjectId
+}
+
+export type ProfileHeaderType = {
+    userProfile: userCreationParamType
+}
+
+export type NavItemsType = {
+    userClerkId: string
 }
