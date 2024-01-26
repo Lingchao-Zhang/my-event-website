@@ -1,11 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
+import { SignedIn, SignedOut, UserButton, currentUser } from "@clerk/nextjs"
 import NavItems from "./NavItems"
 import MobileNav from "./MobileNav"
 import { Button } from "@/components/ui/button"
 
-const Header = () => {
+const Header = async () => {
+    const user = await currentUser()
     return(
         <header className="w-ful border-b">
             <div className="wrapper flex items-center justify-between">
@@ -19,7 +20,7 @@ const Header = () => {
                 </Link>
                 <SignedIn>
                     <nav className="hidden md:flex-between w-full max-w-xs">
-                        <NavItems />
+                        <NavItems userClerkId={user ? user.id : ""} />
                     </nav>
                 </SignedIn>
                 <div className="flex w-32 justify-end gap-3">

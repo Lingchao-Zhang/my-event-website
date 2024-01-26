@@ -6,8 +6,10 @@ import {
 import Image from "next/image"
 import { Separator } from "../ui/separator"
 import NavItems from "./NavItems"
+import { currentUser } from "@clerk/nextjs"
   
-const MobileNav = () => {
+const MobileNav = async () => {
+    const user = await currentUser()
     return(
         <nav className="md:hidden">
             <Sheet>
@@ -28,7 +30,7 @@ const MobileNav = () => {
                         alt="evently logo"
                         />
                     <Separator className="border border-gray-50"/>
-                    <NavItems />
+                    <NavItems userClerkId={user ? user.id : ""} />
                 </SheetContent>
                 
             </Sheet>

@@ -3,6 +3,7 @@
 import { userCreationParamType } from "@/types";
 import { connectToDatabase } from "..";
 import User from "../models/user.model";
+import Event from "../models/event.model";
 
 const createUser = async (userInfo: userCreationParamType) => {
     try{
@@ -27,6 +28,14 @@ const fetchUserById = async (userId: string) => {
         await connectToDatabase()
 
         const user = await User.findOne({ clerkId: userId })
+                               .populate([
+                                {
+                                    path: "organisedEvents",
+                                    model: Event,
+                                    select: "_id imageUrl isFree price category startTime title"
+                                }
+                                // TODO: populate order
+                               ])
 
         return user
     } catch(error: any){
