@@ -2,42 +2,46 @@
 import { CheckoutOrderParamsType, createOrderParamType, getOrdersByEventObjIdParamType, getOrdersByUserIdParamType } from "@/types"
 import { connectToDatabase } from ".."
 import Order from "../models/order.model"
-import Event from "../models/event.model"
 import User from "../models/user.model"
 import Stripe from "stripe"
 import { redirect } from "next/navigation"
+import Event from "../models/event.model"
 const checkoutOrder = async (order: CheckoutOrderParamsType) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   
-    const price = order.isFree ? 0 : Number(order.price) * 100;
-  
-    try {
-      const session = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price_data: {
-              currency: 'aud',
-              unit_amount: price,
-              product_data: {
-                name: order.eventTitle
-              }
-            },
-            quantity: order.ticketAmount
+    const price = order.isFree ? 0 : Number(order.price) * order.ticketAmount * 50;
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: 'aud',
+            unit_amount: price,
+            product_data: {
+              name: order.eventTitle
+            }
           },
-        ],
-        metadata: {
-          eventObjId: JSON.stringify(order.eventObjId),
-          customerId: order.customerId,
+          quantity: order.ticketAmount
         },
-        mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile/${order.customerId}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
-      });
-  
-      redirect(session.url!)
-    } catch(error: any){
-        throw new Error(`Failed to checkout order: ${error.message}`)
+      ],
+      metadata: {
+        eventObjId: JSON.stringify(order.eventObjId),
+        customerId: order.customerId,
+      },
+      mode: 'payment',
+      success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile/${order.customerId}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
+    });
+    
+    const orderInfo = {
+      orderId: session.id,
+      ticketAmount: String(order.ticketAmount),
+      customer: order.customerId,
+      event: order.eventObjId,
+      createdAt: new Date()
     }
+    await createOrder(orderInfo)
+    redirect(session.url!)
   }
 
 const createOrder = async (orderInfo: createOrderParamType) => {
@@ -48,6 +52,9 @@ const createOrder = async (orderInfo: createOrderParamType) => {
           ...orderInfo,
           customer: user._id
         })
+        // add the new order to user orders
+        user.orders.push(newOrder._id)
+        await user.save()
 
         return newOrder
     } catch(error: any){
@@ -59,8 +66,9 @@ const fetchOrdersByUserId = async ({customerId, currentPageNumber, pageSize}: ge
     try{
         await connectToDatabase()
         // calculate skipped events according to currentPageNumber and pageSize
+        const customer = await User.findOne({clerkId: customerId})
         const skippedAmount = (currentPageNumber - 1) * pageSize
-        const orders = Order.find({customer: customerId})
+        const orders = Order.find({customer: customer._id})
                             .skip(skippedAmount)
                             .limit(10)
                             .sort({ createdAt: "desc"})
@@ -72,7 +80,7 @@ const fetchOrdersByUserId = async ({customerId, currentPageNumber, pageSize}: ge
                                 }
                             )
 
-        const totalOrdersNumber = await Order.countDocuments({customer: customerId})
+        const totalOrdersNumber = await Order.countDocuments({customer: customer._id})
         const displayedOrders = await orders.exec()
         const isNext = totalOrdersNumber > displayedOrders.length + skippedAmount
 

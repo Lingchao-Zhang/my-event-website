@@ -65,7 +65,7 @@ const Checkout = ({
                     <AlertDialogAction onClick={onCheckout}>Buy</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+        </AlertDialog>
     )
 }
 

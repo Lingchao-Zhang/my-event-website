@@ -21,13 +21,18 @@ export interface CategoryInterface extends Document{
     name: string;
 } 
 
-export interface OrderInterface extends Document{
-    _id: ObjectId,
-    orderId: string,
-    ticketAmount: string,
-    customer: {clerkId: string},
-    event: {objectId: ObjectId},
-    createdAt: Date
+export interface OrderInterface{
+    orderId: string;
+    ticketAmount: string;
+    customer: {
+        clerkId: string;
+        username: string;
+    }
+    event: {
+        eventObjId: ObjectId;
+        title: string;
+    },
+    createdAt: Date;
 }
 
 export type userCreationParamType = {
@@ -192,7 +197,7 @@ export type createOrderParamType = {
 }
 
 export type getOrdersByUserIdParamType = {
-    customerId: ObjectId;
+    customerId: string;
     currentPageNumber: number;  
     pageSize: number;
 }
@@ -210,4 +215,9 @@ export type CheckoutOrderParamsType = {
     price: string;
     eventObjId: ObjectId;
     customerId: string;
+}
+
+export type OrdersDetailTableType = {
+    type: "Orders of user" | "Orders of event"
+    orders: OrderInterface[]
 }

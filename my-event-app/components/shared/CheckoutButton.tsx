@@ -13,7 +13,7 @@ const CheckoutButton = ({
     price
 }: CheckoutButtonType) => {
     const {user} = useUser()
-    const userId = user?.publicMetadata.userId as string
+    const userId = user?.id as string
     const hasEventClosed = new Date(endTime) < new Date()
     return(
         <div>
