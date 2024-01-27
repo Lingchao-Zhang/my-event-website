@@ -21,6 +21,20 @@ export interface CategoryInterface extends Document{
     name: string;
 } 
 
+export interface OrderInterface{
+    orderId: string;
+    ticketAmount: string;
+    customer: {
+        clerkId: string;
+        username: string;
+    }
+    event: {
+        eventObjId: ObjectId;
+        title: string;
+    },
+    createdAt: Date;
+}
+
 export type userCreationParamType = {
     clerkId: string;
     username: string;
@@ -67,6 +81,7 @@ export type eventCreationParamType = {
 }
 
 export type EventDetailType = {
+    eventObjId: ObjectId;
     title: string;
     category: string;
     description: string;
@@ -155,4 +170,54 @@ export type ProfileHeaderType = {
 
 export type NavItemsType = {
     userClerkId: string
+}
+
+export type CheckoutButtonType = {
+    eventObjectId: ObjectId;
+    eventTitle: string;
+    endTime: Date;
+    isFree: boolean;
+    price: string;
+}
+
+export type CheckoutType = {
+    eventObjectId: ObjectId;
+    eventTitle: string;
+    isFree: boolean;
+    price: string;
+    customerId: string;
+}
+
+export type createOrderParamType = {
+    orderId: string;
+    ticketAmount: string;
+    customer: string;
+    event: ObjectId;
+    createdAt: Date;
+}
+
+export type getOrdersByUserIdParamType = {
+    customerId: string;
+    currentPageNumber: number;  
+    pageSize: number;
+}
+
+export type getOrdersByEventObjIdParamType = {
+    eventObjId: ObjectId;
+    currentPageNumber: number;  
+    pageSize: number;
+}
+
+export type CheckoutOrderParamsType = {
+    eventTitle: string;
+    isFree: boolean;
+    ticketAmount: number;
+    price: string;
+    eventObjId: ObjectId;
+    customerId: string;
+}
+
+export type OrdersDetailTableType = {
+    type: "Orders of user" | "Orders of event"
+    orders: OrderInterface[]
 }

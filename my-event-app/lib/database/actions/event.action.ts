@@ -160,7 +160,7 @@ const fetchAllEvents = async ({currentPageNumber, pageSize, categoryType, search
         }
               
         const displayedEvents = await allEvents.exec()
-        const isNext = totalEventsNumber > displayedEvents.length + pageSize
+        const isNext = totalEventsNumber > displayedEvents.length + skippedAmount
 
         return {displayedEvents, isNext}
     } catch(error: any){
@@ -174,6 +174,7 @@ const fetchRelatedEvents = async ({originalEventObjectId, categoryType, organize
         // related events have either the same category or the same organizer with the original event 
         const organizer = await User.findOne({clerkId: organizerId})
         const relatedEvent = await Event.find({_id: {$ne: originalEventObjectId}, $or: [{category: categoryType}, {createdBy: organizer._id}]})
+                                        .limit(12)
                                         .populate(
                                             {
                                                 path: "createdBy",
