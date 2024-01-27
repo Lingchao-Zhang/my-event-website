@@ -54,7 +54,8 @@ const ProfilePage = async ({params}: {params: profileParamsType}) => {
                         null
                     }
                     {
-                        //TODO: display orders only if currentUserId === userProfile.clerkId
+                        //TODO: display user orders only if currentUserId === userProfile.clerkId
+                        //TODO: display user organised events orders only if currentUserId === userProfile.clerkId
                     }
                 </div>
             </div>

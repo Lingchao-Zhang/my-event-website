@@ -1,10 +1,11 @@
 import { EventDetailType } from "@/types"
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "../ui/button"
 import { formatDateTime, formatPrice } from "@/lib/utils"
+import CheckoutButton from "./CheckoutButton"
 
 const EventDetail = ({
+    eventObjId,
     title,
     category,
     description,
@@ -42,7 +43,13 @@ const EventDetail = ({
                     <Link className="p-regular-24" href={`/profile/${organizer.clerkId}`}>{organizer.username}</Link>
                     <p className="p-regular-20">created At {`${formatDateTime(createdAt).dateTime}`}</p>
                 </div>
-                <Button className="button w-64">{isFree ? "Book" : "Buy"} a ticket</Button>
+                <CheckoutButton 
+                    eventObjectId={eventObjId} 
+                    eventTitle={title}
+                    endTime={endTime} 
+                    isFree={isFree} 
+                    price={price} 
+                />
                 <div className="flex gap-2 mt-5">
                     <Image 
                       src="/assets/icons/calendar.svg"
