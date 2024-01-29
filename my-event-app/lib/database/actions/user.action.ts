@@ -28,15 +28,7 @@ const fetchUserById = async (userId: string) => {
         await connectToDatabase()
 
         const user = await User.findOne({ clerkId: userId })
-                               .populate([
-                                {
-                                    path: "organisedEvents",
-                                    model: Event,
-                                    select: "_id imageUrl isFree price category startTime title"
-                                }
-                                // TODO: populate order
-                               ])
-
+        
         return user
     } catch(error: any){
         throw new Error(`Failed to fetch the user: ${error.message}`)

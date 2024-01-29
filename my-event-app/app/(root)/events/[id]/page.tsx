@@ -1,9 +1,7 @@
 import EventDetail from "@/components/shared/EventDetail"
 import { fetchEventDetailById, fetchRelatedEvents } from "@/lib/database/actions/event.action"
-import { fetchUserById } from "@/lib/database/actions/user.action"
 import { paramsType } from "@/types"
 import { currentUser } from "@clerk/nextjs"
-import { redirect } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import EventCard from "@/components/shared/EventCard"
 
