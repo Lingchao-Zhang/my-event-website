@@ -1,6 +1,6 @@
 "use server"
 
-import { eventCreationParamType, fetchEventsParamType, fetchRelatedEventsParamType, updateEventParamType } from "@/types"
+import { eventCreationParamType, fetchEventsByUserIdParamType, fetchEventsParamType, fetchRelatedEventsParamType, updateEventParamType } from "@/types"
 import { connectToDatabase } from ".."
 import Event from "../models/event.model"
 import User from "../models/user.model"
@@ -162,9 +162,31 @@ const fetchAllEvents = async ({currentPageNumber, pageSize, categoryType, search
         const displayedEvents = await allEvents.exec()
         const isNext = totalEventsNumber > displayedEvents.length + skippedAmount
 
-        return {displayedEvents, isNext}
+        return {displayedEvents, isNext, totalEventsNumber}
     } catch(error: any){
         throw new Error(`Failed to fetch all events: ${error.message}`)
+    }
+}
+
+const fetchEventsByUserId = async ({currentPageNumber, pageSize, userId}: fetchEventsByUserIdParamType) => {
+    try{
+        await connectToDatabase()
+        const user = await User.findOne({clerkId: userId})
+        const skippedAmount = (currentPageNumber - 1) * pageSize
+        const events = Event.find({createdBy: user._id})
+                            .skip(skippedAmount)
+                            .limit(pageSize)
+        
+        const allEvents = await Event.find({createdBy: user._id})
+
+        const totalEventsNumber = await Event.countDocuments({createdBy: user._id})
+        const displayedEvents = await events.exec()
+        const isNext = totalEventsNumber > displayedEvents.length + skippedAmount
+
+        return {displayedEvents, allEvents, isNext, totalEventsNumber} 
+                           
+    } catch(error: any){
+        throw new Error(`Failed to fetch the user events: ${error.message}`)
     }
 }
 
@@ -222,4 +244,4 @@ const deleteEvent = async (eventObjectId: ObjectId) => {
     }
 }
 
-export {createEvent, fetchEventDetailById, fetchAllEvents, fetchRelatedEvents, updateEvent, deleteEvent}
+export {createEvent, fetchEventDetailById, fetchAllEvents, fetchRelatedEvents, updateEvent, deleteEvent, fetchEventsByUserId}

@@ -1,33 +1,37 @@
 import CategoryFilter from '@/components/shared/CategoryFilter'
 import EventCard from '@/components/shared/EventCard'
+import Pagination from '@/components/shared/Pagination'
 import SearchBar from '@/components/shared/SearchBar'
 import { Button } from '@/components/ui/button'
 import { fetchAllCategories } from '@/lib/database/actions/category.action'
 import { fetchAllEvents } from '@/lib/database/actions/event.action'
-import { fetchUserById } from '@/lib/database/actions/user.action'
 import { searchParamsType } from '@/types'
 import { currentUser } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 
 export default async function Home({searchParams}: {searchParams: searchParamsType}) {
   const user = await currentUser()
-  const fetchEventsParam = searchParams.category ? 
+  const searchCategory = searchParams.category
+  const searchFilter = searchParams.filter
+  const searchPage = Number(searchParams.page)
+  const fetchEventsParam = searchCategory ? 
   {
-    currentPageNumber: 1, 
-    pageSize: 10, 
-    categoryType: searchParams.category,
-    searchParam: searchParams.filter ? searchParams.filter : ""
+    currentPageNumber: searchPage ? searchPage : 1, 
+    pageSize: 2, 
+    categoryType: searchCategory,
+    searchParam: searchFilter ? searchFilter : ""
   } : 
   {
-    currentPageNumber: 1, 
-    pageSize: 10, 
-    searchParam: searchParams.filter ? searchParams.filter : ""
+    currentPageNumber: searchPage ? searchPage : 1, 
+    pageSize: 2, 
+    searchParam: searchFilter ? searchFilter : ""
   }
   const allCategories = await fetchAllCategories()
   const eventsData = await fetchAllEvents(fetchEventsParam)
   const events = eventsData.displayedEvents
+  const isNext = eventsData.isNext
+  const totalEventsAmount = eventsData.totalEventsNumber
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -62,23 +66,36 @@ export default async function Home({searchParams}: {searchParams: searchParamsTy
             categories={allCategories}
            />
         </div>
-        <div className="flex w-full flex-col gap-6 md:flex-row md:flex-wrap">
+        <div>
           {
             events.length > 0 ? 
-            events.map((event) => (
-              <EventCard 
-                currentUserId={user?.id || ""}
-                key={event._id}
-                objectId={event._id} 
-                imageUrl={event.imageUrl} 
-                isFree={event.isFree} 
-                price={event.price} 
-                category={event.category} 
-                startTime={event.startTime} 
-                title={event.title} 
-                organizer={event.createdBy}                  
-               />
-            ))
+            <div className="flex flex-col gap-10">
+              <div className="flex w-full flex-col gap-6 md:flex-row md:flex-wrap">
+                {
+                  events.map((event) => (
+                    <EventCard 
+                      currentUserId={user?.id || ""}
+                      key={event._id}
+                      objectId={event._id} 
+                      imageUrl={event.imageUrl} 
+                      isFree={event.isFree} 
+                      price={event.price} 
+                      category={event.category} 
+                      startTime={event.startTime} 
+                      title={event.title} 
+                      organizer={event.createdBy}                  
+                    />
+                  ))
+                }
+              </div>
+              <Pagination 
+                  pageIndexName="page"
+                  pageNumber={searchPage ? searchPage : 1}
+                  isNext={isNext}
+                  currentPath={"/"}
+                  totalPageNumber={totalEventsAmount / fetchEventsParam.pageSize}               
+              />
+            </div>    
             :
             <p className="no-result">No threads founded</p>
           }

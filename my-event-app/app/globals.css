@@ -10,6 +10,9 @@
     .no-result {
       @apply text-center !text-base-regular text-light-3;
     }
+    .pagination {
+      @apply mt-10 flex w-full items-center justify-center gap-5;
+    }
 }
 
 @layer base {

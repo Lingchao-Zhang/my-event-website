@@ -104,12 +104,19 @@ export type paramsType = {
 }
 
 export type profileParamsType = {
-    id: string
+    id: string;
+}
+
+export type ProfileSearchParamsType = {
+    eventsPageNumber: number;
+    userOrdersPageNumber: number;
+    eventOrdersPageNumber: number;
 }
 
 export type searchParamsType = {
     filter: string;
     category: string;
+    page: string;
 }
 
 export type fetchEventsParamType = {
@@ -202,12 +209,6 @@ export type getOrdersByUserIdParamType = {
     pageSize: number;
 }
 
-export type getOrdersByEventObjIdParamType = {
-    eventObjId: ObjectId;
-    currentPageNumber: number;  
-    pageSize: number;
-}
-
 export type CheckoutOrderParamsType = {
     eventTitle: string;
     isFree: boolean;
@@ -220,4 +221,18 @@ export type CheckoutOrderParamsType = {
 export type OrdersDetailTableType = {
     type: "Orders of user" | "Orders of event"
     orders: OrderInterface[]
+}
+
+export type PaginationType = {
+    pageIndexName: "page" | "eventsPageNumber" | "userOrdersPageNumber" | "eventOrdersPageNumber";
+    pageNumber: number;
+    isNext: boolean;
+    currentPath: string;
+    totalPageNumber: number;
+}
+
+export type fetchEventsByUserIdParamType = {
+    currentPageNumber: number;  
+    pageSize: number;
+    userId: string;
 }

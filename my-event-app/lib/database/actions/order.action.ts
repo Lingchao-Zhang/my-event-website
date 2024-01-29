@@ -1,15 +1,16 @@
 "use server"
-import { CheckoutOrderParamsType, createOrderParamType, getOrdersByEventObjIdParamType, getOrdersByUserIdParamType } from "@/types"
+import { CheckoutOrderParamsType, createOrderParamType, getOrdersByUserIdParamType } from "@/types"
 import { connectToDatabase } from ".."
 import Order from "../models/order.model"
 import User from "../models/user.model"
 import Stripe from "stripe"
 import { redirect } from "next/navigation"
 import Event from "../models/event.model"
+import { ObjectId } from "mongoose"
 const checkoutOrder = async (order: CheckoutOrderParamsType) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   
-    const price = order.isFree ? 0 : Number(order.price) * order.ticketAmount * 50;
+    const price = order.isFree ? 0 : Number(order.price) * order.ticketAmount * 100;
 
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -70,7 +71,7 @@ const fetchOrdersByUserId = async ({customerId, currentPageNumber, pageSize}: ge
         const skippedAmount = (currentPageNumber - 1) * pageSize
         const orders = Order.find({customer: customer._id})
                             .skip(skippedAmount)
-                            .limit(10)
+                            .limit(pageSize)
                             .sort({ createdAt: "desc"})
                             .populate(
                                 {
@@ -84,20 +85,17 @@ const fetchOrdersByUserId = async ({customerId, currentPageNumber, pageSize}: ge
         const displayedOrders = await orders.exec()
         const isNext = totalOrdersNumber > displayedOrders.length + skippedAmount
 
-        return {displayedOrders, isNext}
+        return {displayedOrders, isNext, totalOrdersNumber}
     } catch(error: any){
         throw new Error(`Failed to get orders: ${error.message}`)
     }
 }
 
-const fetchOrdersByEventObjId = async ({eventObjId, currentPageNumber, pageSize}: getOrdersByEventObjIdParamType) => {
+const fetchOrdersByEventObjId = async (eventObjId: ObjectId) => {
     try{
         await connectToDatabase()
-        // calculate skipped events according to currentPageNumber and pageSize
-        const skippedAmount = (currentPageNumber - 1) * pageSize
-        const orders = Order.find({event: eventObjId})
-                            .skip(skippedAmount)
-                            .limit(10)
+
+        const orders = await Order.find({event: eventObjId})
                             .sort({ createdAt: "desc"})
                             .populate(
                                 {
@@ -107,11 +105,7 @@ const fetchOrdersByEventObjId = async ({eventObjId, currentPageNumber, pageSize}
                                 }
                             )
 
-        const totalOrdersNumber = await Order.countDocuments({event: eventObjId})
-        const displayedOrders = await orders.exec()
-        const isNext = totalOrdersNumber > displayedOrders.length + skippedAmount
-
-        return {displayedOrders, isNext}
+        return orders
     } catch(error: any){
         throw new Error(`Failed to get orders: ${error.message}`)
     }
