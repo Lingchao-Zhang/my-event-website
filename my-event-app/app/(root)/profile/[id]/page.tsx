@@ -7,9 +7,16 @@ import { fetchOrdersByEventObjId, fetchOrdersByUserId } from "@/lib/database/act
 import { fetchUserById } from "@/lib/database/actions/user.action"
 import { OrderInterface, ProfileSearchParamsType, profileParamsType } from "@/types"
 import { currentUser } from "@clerk/nextjs"
+import { redirect } from "next/navigation"
 
 const ProfilePage = async ({params, searchParams}: {params: profileParamsType, searchParams: ProfileSearchParamsType}) => {
     const user = await currentUser()
+    if(user){
+        const userInfo = await fetchUserById(user.id)
+        if(!userInfo?.onboarded){
+          redirect("/onboarding")
+        }
+    }
     const profileUserId = params.id
     const eventPageNumber = Number(searchParams.eventsPageNumber)
     const userOrdersPageNumber = Number(searchParams.userOrdersPageNumber)
@@ -119,46 +126,61 @@ const ProfilePage = async ({params, searchParams}: {params: profileParamsType, s
                             null
                         }
                     </div>
-                    <Pagination 
-                        pageIndexName="eventsPageNumber"
-                        pageNumber={eventPageNumber ? eventPageNumber : 1} 
-                        isNext={isNextEvents} 
-                        currentPath={`/profile/${profileUserId}?userOrdersPageNumber=${userOrdersPageNumber ? userOrdersPageNumber : 1}&eventOrdersPageNumber=${eventOrdersPageNumber ? eventOrdersPageNumber : 1}`} 
-                        totalPageNumber={eventsTotalAmount / fetchUserEventsParam.pageSize} 
-                    />
+                    {
+                        userEvents.length > 0 ?
+                        <Pagination 
+                            pageIndexName="eventsPageNumber"
+                            pageNumber={eventPageNumber ? eventPageNumber : 1} 
+                            isNext={isNextEvents} 
+                            currentPath={`/profile/${profileUserId}?userOrdersPageNumber=${userOrdersPageNumber ? userOrdersPageNumber : 1}&eventOrdersPageNumber=${eventOrdersPageNumber ? eventOrdersPageNumber : 1}`} 
+                            totalPageNumber={eventsTotalAmount / fetchUserEventsParam.pageSize} 
+                        />
+                        : 
+                        null
+                    }
                 </div>
                 {
                     user?.id === profileUser.clerkId
                     ?
                     <div className="flex flex-col my-10 gap-10">
-                        <div>
-                            <p className="h3-bold my-5">My Orders:</p>
-                            <OrdersDetailTable 
-                                type="Orders of user" 
-                                orders={userOrderList} 
-                            />
-                            <Pagination 
-                                pageIndexName="userOrdersPageNumber"
-                                pageNumber={userOrdersPageNumber ? userOrdersPageNumber : 1} 
-                                isNext={isNextUserOrders} 
-                                currentPath={`/profile/${profileUserId}?eventsPageNumber=${eventPageNumber ? eventPageNumber : 1}&eventOrdersPageNumber=${eventOrdersPageNumber ? eventOrdersPageNumber : 1}`} 
-                                totalPageNumber={userOrdersTotalAmount / fetchUserOrdersParam.pageSize} 
-                            />
-                        </div>
-                        <div>
+                        <p className="h3-bold my-5">My Orders:</p>
+                            {
+                                userOrderList.length > 0 ?
+                                <div>
+                                    <OrdersDetailTable 
+                                    type="Orders of user" 
+                                    orders={userOrderList} 
+                                    />
+                                    <Pagination 
+                                        pageIndexName="userOrdersPageNumber"
+                                        pageNumber={userOrdersPageNumber ? userOrdersPageNumber : 1} 
+                                        isNext={isNextUserOrders} 
+                                        currentPath={`/profile/${profileUserId}?eventsPageNumber=${eventPageNumber ? eventPageNumber : 1}&eventOrdersPageNumber=${eventOrdersPageNumber ? eventOrdersPageNumber : 1}`} 
+                                        totalPageNumber={userOrdersTotalAmount / fetchUserOrdersParam.pageSize} 
+                                    />
+                                </div>
+                                :
+                                null
+                            }
                             <p className="h3-bold my-5">Orders of my events:</p>
-                            <OrdersDetailTable 
-                                type="Orders of event" 
-                                orders={eventOrdersPageNumber ? eventsOrderList.slice(eventOrdersPageNumber - 1, eventOrdersPageNumber) : eventsOrderList.slice(0, eventsOrderPageSize)}
-                            />
-                            <Pagination 
-                                pageIndexName="eventOrdersPageNumber"
-                                pageNumber={eventOrdersPageNumber ? eventOrdersPageNumber : 1} 
-                                isNext={isNextEventsOrders} 
-                                currentPath={`/profile/${profileUserId}?eventsPageNumber=${eventPageNumber ? eventPageNumber : 1}&userOrdersPageNumber=${userOrdersPageNumber ? userOrdersPageNumber : 1}`} 
-                                totalPageNumber={eventsOrderList.length / eventsOrderPageSize} 
-                            />
-                        </div>
+                            {
+                                eventsOrderList.length > 0 ? 
+                                <div>
+                                    <OrdersDetailTable 
+                                        type="Orders of event" 
+                                        orders={eventOrdersPageNumber ? eventsOrderList.slice(eventOrdersPageNumber - 1, eventOrdersPageNumber) : eventsOrderList.slice(0, eventsOrderPageSize)}
+                                    />
+                                    <Pagination 
+                                        pageIndexName="eventOrdersPageNumber"
+                                        pageNumber={eventOrdersPageNumber ? eventOrdersPageNumber : 1} 
+                                        isNext={isNextEventsOrders} 
+                                        currentPath={`/profile/${profileUserId}?eventsPageNumber=${eventPageNumber ? eventPageNumber : 1}&userOrdersPageNumber=${userOrdersPageNumber ? userOrdersPageNumber : 1}`} 
+                                        totalPageNumber={eventsOrderList.length / eventsOrderPageSize} 
+                                    />
+                                </div>
+                                :
+                                null
+                            }
                     </div>
                     :
                     null

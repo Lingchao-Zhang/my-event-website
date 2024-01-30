@@ -5,13 +5,21 @@ import SearchBar from '@/components/shared/SearchBar'
 import { Button } from '@/components/ui/button'
 import { fetchAllCategories } from '@/lib/database/actions/category.action'
 import { fetchAllEvents } from '@/lib/database/actions/event.action'
+import { fetchUserById } from '@/lib/database/actions/user.action'
 import { searchParamsType } from '@/types'
 import { currentUser } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export default async function Home({searchParams}: {searchParams: searchParamsType}) {
   const user = await currentUser()
+  if(user){
+    const userInfo = await fetchUserById(user.id)
+    if(!userInfo?.onboarded){
+      redirect("/onboarding")
+    }
+  }
   const searchCategory = searchParams.category
   const searchFilter = searchParams.filter
   const searchPage = Number(searchParams.page)
@@ -32,6 +40,14 @@ export default async function Home({searchParams}: {searchParams: searchParamsTy
   const events = eventsData.displayedEvents
   const isNext = eventsData.isNext
   const totalEventsAmount = eventsData.totalEventsNumber
+  let currentPath = "/"
+  if(searchFilter && searchCategory){
+    currentPath = `/?filter=${searchFilter}&category=${searchCategory}`
+  } else if(searchFilter && !searchCategory){
+    currentPath = `/?filter=${searchFilter}`
+  } else if(searchCategory && !searchFilter){
+    currentPath = `/?category=${searchCategory}`
+  }
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -92,7 +108,7 @@ export default async function Home({searchParams}: {searchParams: searchParamsTy
                   pageIndexName="page"
                   pageNumber={searchPage ? searchPage : 1}
                   isNext={isNext}
-                  currentPath={"/"}
+                  currentPath={currentPath}
                   totalPageNumber={totalEventsAmount / fetchEventsParam.pageSize}               
               />
             </div>    
