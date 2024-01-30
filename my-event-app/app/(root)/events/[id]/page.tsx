@@ -4,9 +4,17 @@ import { paramsType } from "@/types"
 import { currentUser } from "@clerk/nextjs"
 import { Separator } from "@/components/ui/separator"
 import EventCard from "@/components/shared/EventCard"
+import { fetchUserById } from "@/lib/database/actions/user.action"
+import { redirect } from "next/navigation"
 
 const EventDetailPage = async ({params}: {params: paramsType}) => {
   const user = await currentUser()
+  if(user){
+    const userInfo = await fetchUserById(user.id)
+    if(!userInfo?.onboarded){
+      redirect("/onboarding")
+    }
+  }
   const eventId = params.id
   const eventData = await fetchEventDetailById(eventId)
   const fetchRelatedEventsParam = {
